@@ -1,0 +1,12 @@
+0	Hussain Ansary	5-Jan-74	M	13-Aug-94	h# 978 Street No.72  Defense Phase 1 KHR	A-Level
+1	Shk. Munir Hussaini	13-Dec-74	M	13-Aug-94	H#  169 s#  0 Mutian wala Thata	A-Level
+2	Moeena Momd. Uhad Haque	13-Sep-76	F	17-Aug-94	ho. #  484 street #  95 Lalu khait khr	Fsc
+3	Zeeshan Mustamsir	15-Sep-76	M	20-Aug-94	House No. 31 street #  91 Dak ghar Sadiqabad	F.Sc.
+4	Sheik Ghazi Haque	16-Jun-76	M	23-Aug-94	Ho. # 345 S# 86   khr	Fsc
+5	Midhat Momin Butt	18-Feb-76	F	26-Aug-94	house no.660 St. No.49  Kala pul Karachi	F.Sc.
+6	Sharif Murtaza Zaidi	18-Feb-75	M	1-Aug-94	h no.206 St. No.45  Mujahid block Usman Kot	HSSC
+7	Mouhammed Ibraheem Butt	20-Nov-75	M	4-Aug-94	Ho. No.521 s no.40  Liaqat abad Khr	A level
+8	Eman Shujaat	22-Jul-75	F	7-Aug-94	H No.835 street no.3  Jalabad Chishtian	HSSC
+9	Abdur Raziq Mujahid	22-Aug-74	M	11-Aug-94	house # 382 St. no.98  Kamra chowk Karachi	FSc
+10	Hamna Ansary	25-Apr-74	F	14-Aug-94	h#  697 St. #  94 sea site KHR	A-Level
+11	Abdur Raziq Mujahid	22-Aug-74	M	11-Aug-94	house # 382 St. no.98  Kamra chowk Karachi	FSc
