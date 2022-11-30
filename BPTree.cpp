@@ -18,7 +18,7 @@ struct Name
     string reference;
 };
 
-// BP node
+// B+ Tree Node
 class Node
 {
     bool IS_LEAF;
@@ -30,29 +30,30 @@ class Node
 public:
     Node();
 };
-
-// BP tree
-class BPTree
-{
-    Node *root;
-    void insertInternal(string, string, Node *, Node *);
-    Node *findParent(Node *, Node *);
-
-public:
-    BPTree();
-    void search(string);
-    void insert(string, string);
-    void display(Node *);
-    void populate_from_file(string filename);
-    Node *getRoot();
-    fstream &GotoLine(std::fstream &file, unsigned int num);
-};
-
 Node::Node()
 {
     key = new Name[MAX];
     ptr = new Node *[MAX + 1];
 }
+
+// BP tree
+class BPTree
+{
+    Node *root;
+    void insertInternal(string, string, Node*, Node*);
+    Node *findParent(Node*, Node*);
+
+public:
+    BPTree();
+    void insert(string, string);
+    void populate_from_file(string filename);
+    Node *getRoot();
+    void search(string);
+    fstream &GotoLine(std::fstream &file, unsigned int num);
+    void display(Node *);
+};
+
+
 
 BPTree::BPTree()
 {
@@ -60,6 +61,8 @@ BPTree::BPTree()
 }
 
 // fstream BPTree::GotoLine(std::fstream &file, unsigned int num)
+
+
 fstream &BPTree::GotoLine(std::fstream &file, unsigned int num)
 {
     file.seekg(std::ios::beg);
@@ -69,7 +72,9 @@ fstream &BPTree::GotoLine(std::fstream &file, unsigned int num)
     }
     return file;
 }
+
 // Search operation
+
 void BPTree::search(string x)
 {
     if (root == NULL)
@@ -135,6 +140,7 @@ void BPTree::search(string x)
 }
 
 // Insert Operation
+
 void BPTree::insert(string x, string reference)
 {
     cout << x << " " << reference << endl;
@@ -259,6 +265,7 @@ void BPTree::insert(string x, string reference)
 }
 
 // Insert Operation
+
 void BPTree::insertInternal(string x, string ref, Node *cursor, Node *child)
 {
 
@@ -338,64 +345,10 @@ void BPTree::insertInternal(string x, string ref, Node *cursor, Node *child)
             insertInternal(cursor->key[cursor->size].name, cursor->key[cursor->size].reference, findParent(root, cursor), newInternal);
         }
     }
-    // else
-    // {
-    //     Node *newInternal = new Node;
-    //     string virtualKey[MAX + 1];
-    //     Node *virtualPtr[MAX + 2];
-    //     for (int i = 0; i < MAX; i++)
-    //     {
-    //         // virtualKey[i] = cursor->key[i];
-    //         virtualKey[i] = cursor->key[i].name;
-    //     }
-    //     for (int i = 0; i < MAX + 1; i++)
-    //     {
-    //         virtualPtr[i] = cursor->ptr[i];
-    //     }
-    //     int i = 0, j;
-    //     while (x > virtualKey[i] && i < MAX)
-    //         i++;
-    //     for (int j = MAX + 1; j > i; j--)
-    //     {
-    //         virtualKey[j] = virtualKey[j - 1];
-    //     }
-    //     virtualKey[i] = x;
-    //     for (int j = MAX + 2; j > i + 1; j--)
-    //     {
-    //         virtualPtr[j] = virtualPtr[j - 1];
-    //     }
-    //     virtualPtr[i + 1] = child;
-    //     newInternal->IS_LEAF = false;
-    //     cursor->size = (MAX + 1) / 2;
-    //     newInternal->size = MAX - (MAX + 1) / 2;
-    //     for (i = 0, j = cursor->size + 1; i < newInternal->size; i++, j++)
-    //     {
-    //         // newInternal->key[i] = virtualKey[j];
-    //         newInternal->key[i].name = virtualKey[j];
-    //     }
-    //     for (i = 0, j = cursor->size + 1; i < newInternal->size + 1; i++, j++)
-    //     {
-    //         newInternal->ptr[i] = virtualPtr[j];
-    //     }
-    //     if (cursor == root)
-    //     {
-    //         Node *newRoot = new Node;
-    //         newRoot->key[0] = cursor->key[cursor->size];
-    //         newRoot->ptr[0] = cursor;
-    //         newRoot->ptr[1] = newInternal;
-    //         newRoot->IS_LEAF = false;
-    //         newRoot->size = 1;
-    //         root = newRoot;
-    //     }
-    //     else
-    //     {
-    //         // insertInternal(cursor->key[cursor->size], findParent(root, cursor), newInternal);
-    //         insertInternal(cursor->key[cursor->size].name,cursor->key[cursor->size].reference, findParent(root, cursor), newInternal);
-    //     }
-    // }
 }
 
 // Find the parent
+
 Node *BPTree::findParent(Node *cursor, Node *child)
 {
     Node *parent;
@@ -421,7 +374,7 @@ Node *BPTree::findParent(Node *cursor, Node *child)
 }
 
 // populate the tree from the file
-// template <typename T>
+
 void BPTree::populate_from_file(string filename)
 {
 
