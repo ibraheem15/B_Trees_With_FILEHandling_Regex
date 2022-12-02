@@ -18,7 +18,6 @@ struct Name
     string reference;
 };
 
-
 struct Dob
 {
     string name;
@@ -49,7 +48,6 @@ struct Qualification
     string reference;
 };
 
-
 // B+ Tree Node
 template <typename T>
 class Node
@@ -67,7 +65,6 @@ public:
     }
     template <typename U>
     friend class BPTree;
-
 };
 
 // BP tree
@@ -75,7 +72,8 @@ template <class T>
 class BPTree
 {
     Node<T> *root;
-    public:
+
+public:
     void insertInternal(string x, string ref, Node<T> *cursor, Node<T> *child)
     {
 
@@ -157,7 +155,7 @@ class BPTree
         }
     }
 
-    Node <T>*findParent(Node<T> *cursor, Node<T> *child)
+    Node<T> *findParent(Node<T> *cursor, Node<T> *child)
     {
         Node<T> *parent;
         if (cursor->IS_LEAF || (cursor->ptr[0])->IS_LEAF)
@@ -180,7 +178,6 @@ class BPTree
         }
         return parent;
     }
-
 
     BPTree()
     {
@@ -546,9 +543,6 @@ class BPTree
 int main()
 {
     BPTree<Dob> btree;
-    // btree.insert("A", "File1L1");
-    // btree.insert("B", "File1L2");
-    // btree.insert("C", "File1L3");
     btree.populate_from_file("Fall2022DSDataFile001.txt");
     cout << "\n\nDisplaying the tree: " << endl;
     btree.display(btree.getRoot());
