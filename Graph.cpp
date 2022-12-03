@@ -16,7 +16,7 @@ using namespace std;
 Vector<Edge *> edges;
 Vector<Node *> nodes;
 
-Node::Node(char id)
+Node::Node(int id)
 {
     this->id = id;
     distanceFromStart = INT_MAX;
@@ -24,7 +24,7 @@ Node::Node(char id)
     nodes.push_back(this);
 }
 
-char Node::getId()
+int Node::getId()
 {
     return id;
 }
@@ -165,7 +165,7 @@ Vector<Node *> *Graph::AdjacentRemainingNodes(Node *node)
 void Graph::PrintShortestRouteTo(Node *destination)
 {
     Node *next = destination;
-    cout << "Starting Destination: " << destination->distanceFromStart << endl;
+    cout << "\nStarting Destination: " << destination->distanceFromStart << endl;
     while (next)
     {
         cout << next->id << " ";
@@ -254,34 +254,198 @@ void Graph::Dijkstras()
         delete adjacentNodes;
     }
 }
-void Graph::DijkstrasTest()
+
+void Graph::printNode(Vector<Node *> &nodes)
 {
-    Node *a = new Node('a');
-    Node *b = new Node('b');
-    Node *c = new Node('c');
-    Node *d = new Node('d');
-    Node *e = new Node('e');
-    Node *f = new Node('f');
-    Node *g = new Node('g');
+    Node *root = nodes.getroot();
+    while (root != NULL)
+    {
+        cout << root->id << " ";
+        root = root->next;
+    }
+    cout << endl;
+}
 
-    Edge *e1 = new Edge(a, c, 1);
-    Edge *e2 = new Edge(a, d, 2);
-    Edge *e3 = new Edge(b, c, 2);
-    Edge *e4 = new Edge(c, d, 1);
-    Edge *e5 = new Edge(b, f, 3);
-    Edge *e6 = new Edge(c, e, 3);
-    Edge *e7 = new Edge(e, f, 2);
-    Edge *e8 = new Edge(d, g, 1);
-    Edge *e9 = new Edge(g, f, 1);
+void Graph::DijkstrasTest(int start,int end)
+{
+    // regex
 
-    a->distanceFromStart = 0; // set start node
+    fstream file;
+    file.open("friends.txt", ios::in);
+    stringstream buffer;
+    buffer << file.rdbuf();
+    string content = buffer.str();
+
+    regex nodestobe("([0-9]+)[:]");
+    smatch match;
+    int i = 0;
+    // Node *node = new Node(2500);
+    Node **node = new Node *[2500];
+
+    while (regex_search(content, match, nodestobe))
+    {
+        string id = match.str(0);
+        regex removal("[:]");
+        id = regex_replace(id, removal, "");
+        // cout << endl
+        //  << id << ":";
+
+        if (i == 0)
+        {
+            node[i] = new Node(stoi(id));
+            nodes.push_back(node[i]);
+        }
+        else
+        {
+            node[i] = new Node(stoi(id));
+            nodes.push_back(node[i]);
+        }
+        i++;
+
+        // smatch sedge;
+        // regex redge("([0-9]+)[ ]");
+        // auto start = match.suffix().first;
+        // auto end = match.suffix().second;
+        // string edge = string(start, end);
+
+        // // check end of line
+
+        // smatch endline;
+        // regex reendl("[\\n]");
+        // regex_search(edge, endline, reendl);
+        // if (endline.size() > 0)
+        // {
+        //     edge = edge.substr(0, endline.position());
+        // }
+
+        // while (regex_search(edge, sedge, redge) /* && sedge.size() > 0 */)
+        // {
+        //     string id2 = sedge.str(0);
+        //     regex removal2("[ ]");
+        //     id2 = regex_replace(id2, removal2, "");
+        //     // cout << id2 << " ";
+
+        //     edge = sedge.suffix();
+        // }
+
+        content = match.suffix().str();
+    }
+
+    file.close();
+
+    fstream file1;
+    file1.open("friends.txt", ios::in);
+    stringstream buffer1;
+    buffer1 << file1.rdbuf();
+    string content1 = buffer1.str();
+
+    regex nodestobe1("([0-9]+)[:]");
+    smatch match1;
+    int j = 0;
+    int k = 0;
+
+    Edge **e = new Edge *[1500500];
+    Edge *ee = new Edge(node[0], node[0], 0);
+
+    while (regex_search(content1, match1, nodestobe1))
+    {
+
+        string id = match1.str(0);
+        regex removal("[:]");
+        id = regex_replace(id, removal, "");
+        // cout << endl
+            //  << id << ":";
+
+        smatch sedge;
+        regex redge("([0-9]+)[ ]");
+        auto start = match1.suffix().first;
+        auto end = match1.suffix().second;
+        string edge = string(start, end);
+
+        // check end of line
+
+        smatch endline;
+        regex reendl("[\\n]");
+        regex_search(edge, endline, reendl);
+        if (endline.size() > 0)
+        {
+            edge = edge.substr(0, endline.position());
+        }
+
+        while (regex_search(edge, sedge, redge) /* && sedge.size() > 0 */)
+        {
+            string id2 = sedge.str(0);
+            regex removal2("[ ]");
+            id2 = regex_replace(id2, removal2, "");
+            // cout << stoi(id2) << " ";
+            int id_1 = stoi(id2);
+            // cout<<id_1%1000<<" ";
+
+
+            e[k] = new Edge(node[j], node[(id_1%1000)-1], 1);
+            edges.push_back(e[k]);
+
+            
+            // e[k] = new Edge(node[j], node[id_1], 1);
+            // edges.push_back(e[k]);
+
+
+
+            // e[j] = new Edge(node[j], node[stoi(id2)-1], 1);
+            // edges.push_back(e[j]);
+            k++;
+
+            edge = sedge.suffix();
+        }
+        j++;
+        content1 = match1.suffix().str();
+    }
+
+    // e[0] = new Edge(node[0], node[1], 1);
+
+    // Node *a = new Node(11);
+    // Node *b = new Node(22);
+    // Node *c = new Node(33);
+    // Node *d = new Node(44);
+    // Node *e = new Node(55);
+    // Node *f = new Node(66);
+    // Node *g = new Node(77);
+
+    // Edge *e1 = new Edge(a, c, 1);
+    // Edge *e2 = new Edge(a, d, 2);
+    // Edge *e3 = new Edge(b, c, 2);
+    // Edge *e4 = new Edge(c, d, 1);
+    // Edge *e5 = new Edge(b, f, 3);
+    // Edge *e6 = new Edge(c, e, 3);
+    // Edge *e7 = new Edge(e, f, 2);
+    // Edge *e8 = new Edge(d, g, 1);
+    // Edge *e9 = new Edge(g, f, 1);
+
+    // a->distanceFromStart = 0; // set start node
+
+    // node->distanceFromStart = 0; // set start node
+    // cout<<"\nbaba"<<nodes[0]->id<<endl;
+
+    // node->distanceFromStart = 0; // set start node
+    node[(start%1000)-1]->distanceFromStart = 0; // set start node
+
     Dijkstras();
-    PrintShortestRouteTo(f);
+    // cout << "\nbla" << node[0]->id << endl;
+    // cout << "\nbla" << node[340]->id << endl;
+    // cout << "\nebla" << e[0]->node1->id << endl;
+    // printNode(nodes);
+    PrintShortestRouteTo(node[(end%1000)-1]);
 }
 
 int main()
 {
     Graph *graph = new Graph();
-    graph->DijkstrasTest();
+    int start=0;
+    int end=0;
+    cout<<"Enter the friend start node: ";
+    cin>>start;
+    cout<<"Enter the related friend node: ";
+    cin>>end;
+    graph->DijkstrasTest(start,end);
     return 0;
 }

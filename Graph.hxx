@@ -86,17 +86,29 @@ public:
     {
         return arr[0];
     }
+    T contains(int data)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            if (arr[i] == data)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 };
 
 class Node
 {
 public:
-    char id;
+    int id;
     int distanceFromStart;
     Node *next;
 
-    Node(char id);
-    char getId();
+    Node(int id);
+    int getId();
     int getSize();
     int getDistanceFromStart();
     void setDistanceFromStart(int distanceFromStart);
@@ -138,9 +150,9 @@ public:
     Vector<Edge *> *AdjacentEdges(Vector<Edge *> &edges, Node *node);
     void RemoveEdge(Vector<Edge *> &edges, Edge *edge);
     void Dijkstras();
-    void DijkstrasTest();
+    void DijkstrasTest(int,int);
 
-    void printNode(Node *node);
+    void printNode(Vector<Node *> &nodes);
     void printEdge(Edge *edge);
     Node *getNode(char id);
     Edge *getEdge(char id1, char id2);
