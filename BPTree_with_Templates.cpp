@@ -871,6 +871,43 @@ public:
             }
         }
     }
+
+    void insert_in_file(int id,string name,string dob,string gender,string doj,string adderess,string qualifi)
+    {
+        fstream file;
+        file.open("Fall2022DSDataFile001.txt", ios::app);
+        file << id << "\t" << name << "\t" << dob << "\t" <<gender << "\t" << doj << "\t" << adderess << "\t" << qualifi << endl;
+        file.close();
+    }
+
+    void delete_from_file(string deleteid)
+    {
+        string deleteline;
+        string line;
+        fstream file;
+        file.open("Fall2022DSDataFile001.txt", ios::in);
+        fstream temp;
+        temp.open("temp.txt", ios::out);
+        while (getline(file, line))
+        {
+            // string id(line.begin(), line.begin() + line.find("\t"));
+            // if (id != (deleteid))
+            line.find(deleteid);
+            if (line.find(deleteid) == string::npos)
+            {
+                temp << line << endl;
+            }
+            // line.replace(line.find(deleteid), deleteid.length(), "");
+            // {
+            //     temp << line << endl;
+            // }
+        }
+        file.close();
+        temp.close();
+        remove("Fall2022DSDataFile001.txt");
+        rename("temp.txt", "Fall2022DSDataFile001.txt");
+    }
+    
 };
 
 int main()
@@ -882,5 +919,14 @@ int main()
     btree.search("25-Apr-74");
     btree.deletee("25-Apr-74");
     btree.display(btree.getRoot());
+    btree.insert_in_file(12,"hassan bukhari","25-Apr-74", "G","25-Apr-74","karachi","FSc");
+    btree.populate_from_file("Fall2022DSDataFile001.txt");
+    cout<<endl<<endl;
+    btree.display(btree.getRoot());
+    btree.delete_from_file("hassan bukhari");
+    btree.populate_from_file("Fall2022DSDataFile001.txt");
+    cout<<endl<<endl;
+    btree.display(btree.getRoot());
+
 
 }
