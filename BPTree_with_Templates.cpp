@@ -11,6 +11,7 @@
 #include <regex>
 using namespace std;
 int MAX = 3;
+int MIN = 2;
 
 struct Name
 {
@@ -308,6 +309,338 @@ public:
         }
     }
 
+    void deleteInternal(string x, Node<T> *cursor)
+    {
+        int i = 0;
+        // while (x > cursor->key[i].name && i < cursor->size)
+        while (x.compare(cursor->key[i].name) > 0 && i < cursor->size)
+        {
+            i++;
+        }
+        if (x == cursor->key[i].name)
+        {
+            if (cursor->IS_LEAF)
+            {
+                for (int j = i; j < cursor->size - 1; j++)
+                {
+                    cursor->key[j] = cursor->key[j + 1];
+                }
+                cursor->size--;
+                return;
+            }
+            else
+            {
+                Node<T> *left = cursor->ptr[i];
+                Node<T> *right = cursor->ptr[i + 1];
+                if (left->size > MIN)
+                {
+                    Node<T> *temp = left;
+                    while (temp->IS_LEAF == false)
+                    {
+                        temp = temp->ptr[temp->size];
+                    }
+                    cursor->key[i] = temp->key[temp->size - 1];
+                    deleteInternal(temp->key[temp->size - 1].name, temp);
+                }
+                else if (right->size > MIN)
+                {
+                    Node<T> *temp = right;
+                    while (temp->IS_LEAF == false)
+                    {
+                        temp = temp->ptr[0];
+                    }
+                    cursor->key[i] = temp->key[0];
+                    deleteInternal(temp->key[0].name, temp);
+                }
+                else
+                {
+                    for (int j = i; j < cursor->size - 1; j++)
+                    {
+                        cursor->key[j] = cursor->key[j + 1];
+                    }
+                    for (int j = i + 1; j < cursor->size; j++)
+                    {
+                        cursor->ptr[j] = cursor->ptr[j + 1];
+                    }
+                    cursor->size--;
+                    left->key[left->size] = cursor->key[i];
+                    left->size++;
+                    for (int j = 0; j < right->size; j++)
+                    {
+                        left->key[left->size] = right->key[j];
+                        left->size++;
+                    }
+                    for (int j = 0; j < right->size + 1; j++)
+                    {
+                        left->ptr[left->size] = right ->ptr[j];
+                        left->size++;
+                    }
+                    delete right;
+                    deleteInternal(cursor->key[i].name, cursor);
+                }
+            }
+        }
+        else
+        {
+            if (cursor->IS_LEAF)
+            {
+                cout << "NOT FOUND" << endl;
+                return;
+            }
+            bool flag = ((i == cursor->size) ? true : false);
+            Node<T> *child = cursor->ptr[i];
+            if (child->size == MIN)
+            {
+                if (i != cursor->size && cursor->ptr[i + 1]->size > MIN)
+                {
+                    Node<T> *sibling = cursor->ptr[i + 1];
+                    child->key[child->size] = cursor->key[i];
+                    child->size++;
+                    cursor->key[i] = sibling->key[0];
+                    for (int j = 0; j < sibling->size - 1; j++)
+                    {
+                        sibling->key[j] = sibling->key[j + 1];
+                    }
+                    if (sibling->IS_LEAF == false)
+                    {
+                        child->ptr[child->size] = sibling->ptr[0];
+                        for (int j = 0; j < sibling->size; j++)
+                        {
+                            sibling->ptr[j] = sibling->ptr[j + 1];
+                        }
+                    }
+                    sibling->size--;
+                }
+                else if (i != 0 && cursor->ptr[i - 1]->size > MIN)
+                {
+                    Node<T> *sibling = cursor->ptr[i - 1];
+                    for (int j = child->size - 1; j >= 0; j--)
+                    {
+                        child->key[j + 1] = child->key[j];
+                    }
+                    if (child->IS_LEAF == false)
+                    {
+                        for (int j = child->size; j >= 0; j--)
+                        {
+                            child->ptr[j + 1] = child->ptr[j];
+                        }
+                    }
+                    child->key[0] = cursor->key[i - 1];
+                    if (child->IS_LEAF == false)
+                    {
+                        child->ptr[0] = sibling->ptr[sibling->size];
+                    }
+                    cursor->key[i - 1] = sibling->key[sibling->size - 1];
+                    child->size++;
+                    sibling->size--;
+                }
+                else
+                {
+                    if (i != cursor->size)
+                    {
+                        Node<T> *sibling = cursor->ptr[i + 1];
+                        child->key [child->size] = cursor->key[i];
+                        for (int j = 0; j < sibling->size; j++)
+                        {
+                            child->key[child->size + 1 + j] = sibling->key[j];
+                        }
+                        if (child->IS_LEAF == false)
+                        {
+                            for (int j = 0; j <= sibling->size; j++)
+                            {
+                                child->ptr[child->size + 1 + j] = sibling->ptr[j];
+                            }
+                        }
+                        child->size += sibling->size + 1;
+                        for (int j = i + 1; j < cursor->size; j++)
+                        {
+                            cursor->key[j - 1] = cursor->key[j];
+                        }
+                        for (int j = i + 2; j <= cursor->size; j++)
+                        {
+                            cursor->ptr[j - 1] = cursor->ptr[j];
+                        }
+                        cursor->size--;
+                        delete sibling;
+                    }
+                    else
+                    {
+                        Node<T> *sibling = cursor->ptr[i - 1];
+                        for (int j = 0; j < child->size; j++)
+                        {
+                            sibling->key[sibling->size + 1 + j] = child->key[j];
+                        }
+                        if (child->IS_LEAF == false)
+                        {
+                            for (int j = 0; j <= child->size; j++)
+                            {
+                                sibling->ptr[sibling->size + 1 + j] = child->ptr[j];
+                            }
+                        }
+                        sibling->size += child->size + 1;
+                        cursor->size--;
+                        delete child;
+                    }
+                }
+            }
+            deleteInternal(x, cursor->ptr[i]);
+        }
+    }
+
+
+    void deletee(string x)
+    {
+        Node<T> *cursor = root;
+        Node<T> *parent;
+        int i;
+        while (cursor->IS_LEAF == false)
+        {
+            parent = cursor;
+            for (i = 0; i < cursor->size; i++)
+            {
+                if (x < cursor->key[i].name)
+                {
+                    cursor = cursor->ptr[i];
+                    break;
+                }
+                if (i == cursor->size - 1)
+                {
+                    cursor = cursor->ptr[i + 1];
+                    break;
+                }
+            }
+        }
+        for (i = 0; i < cursor->size; i++)
+        {
+            if (x == cursor->key[i].name)
+            {
+                break;
+            }
+        }
+        if (i == cursor->size)
+        {
+            cout << "Not found" << endl;
+            return;
+        }
+        for (int j = i; j < cursor->size - 1; j++)
+        {
+            cursor->key[j] = cursor->key[j + 1];
+        }
+        cursor->size--;
+        if (cursor->size >= (MAX + 1) / 2)
+        {
+            return;
+        }
+        else
+        {
+            if (cursor == root)
+            {
+                if (cursor->size == 0)
+                {
+                    root = cursor->ptr[0];
+                }
+                return;
+            }
+            int flag = 0;
+            for (i = 0; i < parent->size + 1; i++)
+            {
+                if (parent->ptr[i] == cursor)
+                {
+                    flag = 1;
+                    break;
+                }
+            }
+            if (flag == 0)
+            {
+                i--;
+            }
+            if (i != 0)
+            {
+                Node<T> *leftSibling = parent->ptr[i - 1];
+                if (leftSibling->size >= (MAX + 1) / 2 + 1)
+                {
+                    for (int j = cursor->size; j > 0; j--)
+                    {
+                        cursor->key[j] = cursor->key[j - 1];
+                    }
+                    cursor->key[0] = leftSibling->key[leftSibling->size - 1];
+                    cursor->size++;
+                    leftSibling->size--;
+                    parent->key[i - 1] = cursor->key[0];
+                    return;
+                }
+            }
+            if (i != parent->size)
+            {
+                Node<T> *rightSibling = parent->ptr[i + 1];
+                if (rightSibling->size >= (MAX + 1) / 2 + 1)
+                {
+                    cursor->key[cursor->size] = rightSibling->key[0];
+                    cursor->size++;
+                    rightSibling->size--;
+                    for (int j = 0; j < rightSibling->size; j++)
+                    {
+                        rightSibling->key[j] = rightSibling->key[j + 1];
+                    }
+                    parent->key[i] = rightSibling->key[0];
+                    return;
+                }
+            }
+            if (i != 0)
+            {
+                Node<T> *leftSibling = parent->ptr[i - 1];
+                leftSibling->key[leftSibling->size] = parent->key[i - 1];
+                leftSibling->size++;
+                for (int j = 0; j < cursor->size; j++)
+                {
+                    leftSibling->key[leftSibling->size] = cursor->key[j];
+                    leftSibling->size++;
+                }
+                leftSibling->ptr[leftSibling->size] = cursor->ptr[cursor->size];
+                for (int j = i - 1; j < parent->size - 1; j++)
+                {
+                    parent->key[j] = parent->key[j + 1];
+                    parent->ptr[j + 1] = parent->ptr[j + 2];
+                }
+                parent->size--;
+                if (parent->size >= (MAX + 1) / 2)
+                {
+                    return;
+                }
+                else
+                {
+                    deleteInternal(parent->key[0].name, parent);
+                }
+            }
+            if (i != parent->size)
+            {
+                Node<T> *rightSibling = parent->ptr[i + 1];
+                cursor->key[cursor->size] = parent->key[i];
+                cursor->size++;
+                for (int j = 0; j < rightSibling->size; j++)
+                {
+                    cursor->key[cursor->size] = rightSibling->key[j];
+                    cursor->size++;
+                }
+                cursor->ptr[cursor->size] = rightSibling->ptr[rightSibling->size];
+                for (int j = i; j < parent->size - 1; j++)
+                {
+                    parent->key[j] = parent->key[j + 1];
+                    parent->ptr[j + 1] = parent->ptr[j + 2];
+                }
+                parent->size--;
+                if (parent->size >= (MAX + 1) / 2)
+                {
+                    return;
+                }
+                else
+                {
+                    deleteInternal(parent->key[0].name, parent);
+                }
+            }
+        }
+    }
+
     void populate_from_file(string filename)
     {
 
@@ -547,4 +880,7 @@ int main()
     cout << "\n\nDisplaying the tree: " << endl;
     btree.display(btree.getRoot());
     btree.search("25-Apr-74");
+    btree.deletee("25-Apr-74");
+    btree.display(btree.getRoot());
+
 }
