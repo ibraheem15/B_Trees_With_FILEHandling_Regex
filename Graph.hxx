@@ -105,6 +105,8 @@ class Node
 public:
     int id;
     int distanceFromStart;
+    int count;
+    int friends;
     Node *next;
 
     Node(int id);
@@ -151,6 +153,7 @@ public:
     void RemoveEdge(Vector<Edge *> &edges, Edge *edge);
     void Dijkstras();
     void DijkstrasTest(int,int);
+    void BiggestPath();
 
     void printNode(Vector<Node *> &nodes);
     void printEdge(Edge *edge);
