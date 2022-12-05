@@ -241,8 +241,6 @@ public:
             else
             {
                 Node<T> *newLeaf = new Node<T>;
-                // cout<<"check"<<endl;
-                // cout<<x;//<<" "<<cursor->key[i].name<<endl;
 
                 T virtualNode[MAX + 1];
 
@@ -849,6 +847,56 @@ public:
         }
     }
 
+    void search2(string x, Node<T> *current)
+    {
+        fstream file;
+        file.open("Fall2022DSDataFile001.txt", ios::in);
+        string ss;
+        if (root == NULL)
+        {
+            cout << "Tree is empty\n";
+        }
+        else
+        {
+            if (current->IS_LEAF == false)
+            {
+                for (int i = 0; i <= current->size; i++)
+                {
+                    search2(x, current->ptr[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i <= current->size; i++)
+                {
+                    if (current->key[i].name == x)
+                    {
+                        cout << "--------Data found--------\n";
+                        // cout << current->key[i].name << " " << current->key[i].reference << endl;
+
+                        string str;
+                        string line = current->key[i].reference;
+
+                        smatch sfnum;
+                        regex rfnum("L([0-9]+)");
+                        regex_search(line, sfnum, rfnum);
+                        regex removal("L");
+                        string line_actual = sfnum.str(0);
+                        line_actual = regex_replace(line_actual, removal, "");
+                        int intline = stoi(line_actual);
+
+                        GotoLine(file, intline + 1);
+                        getline(file, str);
+                        cout << str << endl;
+                    }
+                }
+
+                return;
+            }
+        }
+        cout << endl;
+    }
+
     fstream &GotoLine(std::fstream &file, unsigned int num)
     {
         file.seekg(std::ios::beg);
@@ -877,11 +925,49 @@ public:
         }
     }
 
-    void insert_in_file(int id, string name, string dob, string gender, string doj, string adderess, string qualifi)
+    void insert_in_file(string filename, int id, string name, string dob, string gender, string doj, string adderess, string qualifi)
     {
         fstream file;
-        file.open("Fall2022DSDataFile001.txt", ios::app);
+        file.open(filename, ios::app);
+        // for reference
+        smatch sfname;
+        regex rfname("([A-Z])");
+        regex_search(filename, sfname, rfname);
+        string fname = sfname.str(0);
+
+        smatch sfnum;
+        regex rfnum("File([0-9]+)");
+        regex_search(filename, sfnum, rfnum);
+        string fnum = sfnum.str(0);
+        // remove file from string
+        regex removalf("File0");
+        fnum = regex_replace(fnum, removalf, "");
+
         file << id << "\t" << name << "\t" << dob << "\t" << gender << "\t" << doj << "\t" << adderess << "\t" << qualifi << endl;
+
+        string reference = fname + fnum + "L" + to_string(id);
+        string type = typeid(T).name();
+        // regex for type
+        smatch stype;
+        regex type_regex("([a-zA-Z]+)");
+        regex_search(type, stype, type_regex);
+        type = stype.str(0);
+        if (type == "Name")
+        {
+            insert(name, reference);
+        }
+        else if (type == "Dob")
+        {
+            insert(dob, reference);
+        }
+        else if (type == "Gender")
+            insert(gender, reference);
+        else if (type == "Doj")
+            insert(doj, reference);
+        else if (type == "Address")
+            insert(adderess, reference);
+        else if (type == "Qualification")
+            insert(qualifi, reference);
         file.close();
     }
 
@@ -896,8 +982,6 @@ public:
         temp.open("temp.txt", ios::out);
         while (getline(file, line))
         {
-            // string id(line.begin(), line.begin() + line.find("\t"));
-            // if (id != (deleteid))
             line.find(deleteid);
             if (line.find(deleteid) == string::npos)
             {
@@ -913,21 +997,23 @@ public:
 
 int main()
 {
-    BPTree<Dob> btree;
+    BPTree<Name> btree;
     btree.populate_from_file("Fall2022DSDataFile001.txt");
     cout << "\n\nDisplaying the tree: " << endl;
     btree.display(btree.getRoot());
-    btree.search("25-Apr-74");
+    btree.search2("25-Apr-74", btree.getRoot());
     btree.deletee("25-Apr-74");
     btree.display(btree.getRoot());
-    btree.insert_in_file(12, "hassan bukhari", "25-Apr-74", "G", "25-Apr-74", "karachi", "FSc");
-    btree.populate_from_file("Fall2022DSDataFile001.txt");
+    btree.insert_in_file("Fall2022DSDataFile001.txt", 17, "hassan bukhari", "25-Apr-74", "G", "25-Apr-74", "karachi", "FSc");
     cout << endl
          << endl;
+    cout << "Displaying the tree again: " << endl;
     btree.display(btree.getRoot());
     btree.delete_from_file("hassan bukhari");
-    btree.populate_from_file("Fall2022DSDataFile001.txt");
+    // btree.populate_from_file("Fall2022DSDataFile001.txt");
     cout << endl
          << endl;
+    cout << "Displaying the tree again part 2: " << endl;
+
     btree.display(btree.getRoot());
 }

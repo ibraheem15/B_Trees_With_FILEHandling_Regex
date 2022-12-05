@@ -57,7 +57,7 @@
 2057	Murtaza Shuja Laghari	27-Dec-77	M	28-Aug-97	h# 38 s# 93  Lalu khait KHR	A-Level
 2058	Nawabzada Salim Bhatti	27-Dec-79	M	3-Aug-97	Ho. # 585 s# 88   khr	Fsc
 2059	Pervaiz Rizwan	29-Sep-79	M	6-Aug-97	house no.900 street # 84  Bara bazar Thata	F.Sc.
-2060	 Rai Pasha	29-May-79	F	9-Aug-97	ho. # 214 S No.47  Gulshan Abad khr	Fsc
+2060	Rai Pasha	29-May-79	F	9-Aug-97	ho. # 214 S No.47  Gulshan Abad khr	Fsc
 2061	Umer Ibraheem Shah	2-Jun-79	M	12-Aug-97	House No.761 S# 42  Mitthian Wahari	F.Sc.
 2062	Sheik Kabir Pasha	2-Feb-78	M	16-Aug-97	H No.75 St. No.38  Shuakat coloney Chishtian	HSSC
 2063	Shehnaz Rana Barkat Abbasi	5-Oct-78	F	19-Aug-97	Ho. no. 390 st. #  33 Town ship near Barkat chowk Khr	A level
