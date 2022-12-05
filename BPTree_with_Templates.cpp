@@ -10,7 +10,7 @@
 #include <string>
 #include <regex>
 using namespace std;
-int MAX = 3;
+int MAX = 4;
 int MIN = 2;
 
 struct Name
@@ -254,7 +254,8 @@ public:
                     // virtualNode[i] = cursor->key[i].reference;
                 }
                 // cout<<"check"<<endl;
-                int i = 0, j;
+                int i = 0;
+                int j;
                 // while (x > virtualNode[i] && i < MAX)
                 while (x.compare(virtualNode[i].name) > 0 && i < MAX)
                 {
@@ -266,7 +267,7 @@ public:
                 for (int j = MAX; j > i; j--)
                 {
                     // cout << "check" << endl;
-                    virtualNode[j] = virtualNode[j - 1]; // segmentatio fault
+                    virtualNode[j] = virtualNode[j - 1];
                 }
                 // virtualNode[i] = x;
                 virtualNode[i].name = x;
@@ -372,7 +373,7 @@ public:
                     }
                     for (int j = 0; j < right->size + 1; j++)
                     {
-                        left->ptr[left->size] = right ->ptr[j];
+                        left->ptr[left->size] = right->ptr[j];
                         left->size++;
                     }
                     delete right;
@@ -439,7 +440,7 @@ public:
                     if (i != cursor->size)
                     {
                         Node<T> *sibling = cursor->ptr[i + 1];
-                        child->key [child->size] = cursor->key[i];
+                        child->key[child->size] = cursor->key[i];
                         for (int j = 0; j < sibling->size; j++)
                         {
                             child->key[child->size + 1 + j] = sibling->key[j];
@@ -486,7 +487,6 @@ public:
             deleteInternal(x, cursor->ptr[i]);
         }
     }
-
 
     void deletee(string x)
     {
@@ -687,6 +687,7 @@ public:
             regex rid("([0-9]+)");
             regex_search(str, sid, rid);
             int Id = stoi(sid.str(0));
+            Id = Id % 100;
 
             string reference = fname + fnum + "L" + to_string(Id);
             // insert(Id, reference);
@@ -694,10 +695,14 @@ public:
             if (type == "Name")
             {
                 smatch sname;
-                regex rname("([A-Za-z]+)( )([A-Za-z]+)|([A-Za-z]+)( )([A-Za-z]+)( )([A-Za-z]+)");
+                // regex rname("((\t)([a-zA-Z]+-)-([a-zA-Z]+-)-([a-zA-Z]+-)(\t))|([A-Za-z]+)( )([A-Za-z]+)|([A-Za-z]+)( )([A-Za-z]+)( )([A-Za-z]+)|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})(\t))|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})( )([A-Z]{1}[a-z]{1,30})(\t))|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})( )([A-Z]{1}[a-z]{1,30})( )([A-Z]{1}[a-z]{1,30})(\t))|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})(\t))");
                 // (^(.*?)[0-9]+)
+                regex rname("(\t)((.+)(?=(\t)([0-9]{1,2}(-|/)[A-Z]{1}[a-z]{2}(-|/)([0-9]{2}))(\t)(M|F)))");
+                // regex rname("(\n|^)([0-9]+)(\t)((.+)(?=(\t)([0-9]{1,2}(-|/)[A-Z]{1}[a-z]{2}(-|/)([0-9]{2}))(\t)(M|F)))");
                 regex_search(str, sname, rname);
-                string Name = sname.str(0);
+                regex removal("(\t)");
+                string Name = regex_replace(sname.str(0), removal, "");
+                // string Name = sname.str(0);
 
                 insert(Name, reference);
             }
@@ -707,7 +712,7 @@ public:
             if (type == "Dob")
             {
                 smatch sdob;
-                regex rdob("([0-9]+)(-)([A-Za-z]+)(-)([0-9]+)");
+                regex rdob("([0-9]+)(-|/)([A-Za-z]+)(-|/)([0-9]+)");
                 regex_search(str, sdob, rdob);
                 string Dob = sdob.str(0);
 
@@ -859,7 +864,7 @@ public:
         {
             for (int i = 0; i < cursor->size; i++)
             {
-                cout << cursor->key[i].name << " " << cursor->key[i].reference << " ";
+                cout << cursor->key[i].name << " " << cursor->key[i].reference << " \n";
             }
             cout << "\n";
             if (cursor->IS_LEAF != true)
@@ -872,16 +877,17 @@ public:
         }
     }
 
-    void insert_in_file(int id,string name,string dob,string gender,string doj,string adderess,string qualifi)
+    void insert_in_file(int id, string name, string dob, string gender, string doj, string adderess, string qualifi)
     {
         fstream file;
         file.open("Fall2022DSDataFile001.txt", ios::app);
-        file << id << "\t" << name << "\t" << dob << "\t" <<gender << "\t" << doj << "\t" << adderess << "\t" << qualifi << endl;
+        file << id << "\t" << name << "\t" << dob << "\t" << gender << "\t" << doj << "\t" << adderess << "\t" << qualifi << endl;
         file.close();
     }
 
     void delete_from_file(string deleteid)
     {
+        deletee(deleteid);
         string deleteline;
         string line;
         fstream file;
@@ -897,17 +903,12 @@ public:
             {
                 temp << line << endl;
             }
-            // line.replace(line.find(deleteid), deleteid.length(), "");
-            // {
-            //     temp << line << endl;
-            // }
         }
         file.close();
         temp.close();
         remove("Fall2022DSDataFile001.txt");
         rename("temp.txt", "Fall2022DSDataFile001.txt");
     }
-    
 };
 
 int main()
@@ -919,14 +920,14 @@ int main()
     btree.search("25-Apr-74");
     btree.deletee("25-Apr-74");
     btree.display(btree.getRoot());
-    btree.insert_in_file(12,"hassan bukhari","25-Apr-74", "G","25-Apr-74","karachi","FSc");
+    btree.insert_in_file(12, "hassan bukhari", "25-Apr-74", "G", "25-Apr-74", "karachi", "FSc");
     btree.populate_from_file("Fall2022DSDataFile001.txt");
-    cout<<endl<<endl;
+    cout << endl
+         << endl;
     btree.display(btree.getRoot());
     btree.delete_from_file("hassan bukhari");
     btree.populate_from_file("Fall2022DSDataFile001.txt");
-    cout<<endl<<endl;
+    cout << endl
+         << endl;
     btree.display(btree.getRoot());
-
-
 }

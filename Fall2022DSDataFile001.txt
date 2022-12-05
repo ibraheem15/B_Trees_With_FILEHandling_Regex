@@ -10,3 +10,7 @@
 9	Abdur Raziq Mujahid	22-Aug-74	M	11-Aug-94	house # 382 St. no.98  Kamra chowk Karachi	FSc
 10	Hamna Ansary	25-Apr-74	F	14-Aug-94	h#  697 St. #  94 sea site KHR	A-Level
 11	Abdur Raziq Mujahid	22-Aug-74	M	11-Aug-94	house # 382 St. no.98  Kamra chowk Karachi	FSc
+12	Viqar-ul-Islam Niaz Niazi	8-Feb-74	M	6-Aug-94	h# 397 St. No.51  Tariq road KHR	A-Level
+13	Shehla Mohammed Karam Chohan	14-Jul-74	F	4-Aug-94	House # 706 street no.30  Tool factory coloney karachi	FSc
+114	Shahzor Junaid Haque	11-Dec-86	M	21-Aug-04	ho. #  216 s#  21 Mitran walia Umer Kot	Fsc
+6265	Amina Muslim	29/Feb/85	F	24-Aug-04	Ho. No. 168 St. No. 97 Garrizon Sadiqabad	A level

@@ -489,7 +489,7 @@ void Graph::DijkstrasTest(int start, int end)
             edge = edge.substr(0, endline.position());
         }
 
-        while (regex_search(edge, sedge, redge) /* && sedge.size() > 0 */)
+        while (regex_search(edge, sedge, redge) )
         {
             string id2 = sedge.str(0);
             regex removal2("[ ]");
