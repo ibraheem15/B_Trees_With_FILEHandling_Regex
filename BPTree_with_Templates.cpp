@@ -13,6 +13,13 @@ using namespace std;
 int MAX = 4;
 int MIN = 2;
 
+string FILENAME;
+
+struct Id
+{
+    string name;
+    string reference;
+};
 struct Name
 {
     string name;
@@ -73,8 +80,14 @@ template <class T>
 class BPTree
 {
     Node<T> *root;
+    int nodecount;
 
 public:
+    BPTree()
+    {
+        root = NULL;
+        nodecount = 0;
+    }
     void insertInternal(string x, string ref, Node<T> *cursor, Node<T> *child)
     {
 
@@ -178,11 +191,6 @@ public:
             }
         }
         return parent;
-    }
-
-    BPTree()
-    {
-        root = NULL;
     }
 
     void insert(string x, string reference)
@@ -664,7 +672,10 @@ public:
 
         regex rid("([0-9]+).*");
         smatch match;
-        int count = 0;
+        int count = 1;
+        nodecount = 1;
+        cout << "check1" << nodecount << endl;
+
         while (regex_search(str, match, rid))
         {
 
@@ -684,19 +695,21 @@ public:
             smatch sid;
             regex rid("([0-9]+)");
             regex_search(str, sid, rid);
-            int Id = stoi(sid.str(0));
-            Id = Id % 100;
+            string Id = sid.str(0);
 
-            string reference = fname + fnum + "L" + to_string(Id);
+            // string reference = fname + fnum + "L" + to_string(Id);
+            string reference = fname + fnum + "L" + to_string(count);
             // insert(Id, reference);
 
-            if (type == "Name")
+            if (type == "Id")
+            {
+                insert(Id, reference);
+            }
+
+            else if (type == "Name")
             {
                 smatch sname;
-                // regex rname("((\t)([a-zA-Z]+-)-([a-zA-Z]+-)-([a-zA-Z]+-)(\t))|([A-Za-z]+)( )([A-Za-z]+)|([A-Za-z]+)( )([A-Za-z]+)( )([A-Za-z]+)|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})(\t))|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})( )([A-Z]{1}[a-z]{1,30})(\t))|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})( )([A-Z]{1}[a-z]{1,30})( )([A-Z]{1}[a-z]{1,30})(\t))|((\t)([A-Z]{1}[a-z]{1,30})( |. )([A-Z]{1}[a-z]{1,30})(\t))");
-                // (^(.*?)[0-9]+)
                 regex rname("(\t)((.+)(?=(\t)([0-9]{1,2}(-|/)[A-Z]{1}[a-z]{2}(-|/)([0-9]{2}))(\t)(M|F)))");
-                // regex rname("(\n|^)([0-9]+)(\t)((.+)(?=(\t)([0-9]{1,2}(-|/)[A-Z]{1}[a-z]{2}(-|/)([0-9]{2}))(\t)(M|F)))");
                 regex_search(str, sname, rname);
                 regex removal("(\t)");
                 string Name = regex_replace(sname.str(0), removal, "");
@@ -704,8 +717,6 @@ public:
 
                 insert(Name, reference);
             }
-
-            // cout << "Name: " << Name << endl;
 
             if (type == "Dob")
             {
@@ -716,7 +727,6 @@ public:
 
                 insert(Dob, reference);
             }
-            // cout << "DOB: " << Dob << endl;
 
             if (type == "Gender")
             {
@@ -729,8 +739,6 @@ public:
 
                 insert(Gender, reference);
             }
-
-            // cout << "Gender: " << Gender << endl;
 
             if (type == "Doj")
             {
@@ -746,7 +754,6 @@ public:
 
                 insert(Doj, reference);
             }
-            // cout << "DOJ: " << Doj << endl;
 
             if (type == "Address")
             {
@@ -760,22 +767,19 @@ public:
                 Address = regex_replace(Address, removall3, "");
                 insert(Address, reference);
             }
-            // cout << "Address: " << Address << endl;
 
             if (type == "Qualification")
             {
                 smatch squalification;
-                regex rqualification("(\t)([A-Za-z]+)(-Level)|(FSc)|(Fsc)|(F.Sc.)|(HSSC)|( )([A-Za-z]+)(-Level)|(FSc)|(Fsc)|(F.Sc.)|(HSSC)|( )([A-Za-z]+)(-Level)|(FSc)|(Fsc)|(F.Sc.)|(HSSC)");
+                regex rqualification("(\t)([A-Za-z]+)(-Level)|(FSc)|(Fsc)|(F.Sc.)|(HSSC)|( )([A-Za-z]+)(-Level)|(FSc)|(Fsc)|(F.Sc.)|(HSSC)|( )([A-Za-z]+)(-Level)|(FSc)|(Fsc)|(F.Sc.)|(HSSC)|( )([A-Za-z]+)(-Level)|(FSc)|(Fsc)|(F.Sc.)|(HSSC)|([A])([ ]([level]+))");
                 regex_search(str, squalification, rqualification);
                 string Qualification = squalification.str(0);
 
                 insert(Qualification, reference);
             }
-            // cout << "Qualification: " << Qualification << endl;
-
-            // cout << endl;
             str = match.suffix().str();
             count++;
+            nodecount = count;
         }
     }
 
@@ -793,7 +797,7 @@ public:
         {
             int i = 0;
             fstream file;
-            file.open("Fall2022DSDataFile001.txt", ios::in);
+            file.open(FILENAME, ios::in);
             string ss;
             Node<T> *cursor = root;
             while (cursor->IS_LEAF == false)
@@ -850,7 +854,7 @@ public:
     void search2(string x, Node<T> *current)
     {
         fstream file;
-        file.open("Fall2022DSDataFile001.txt", ios::in);
+        file.open(FILENAME, ios::in);
         string ss;
         if (root == NULL)
         {
@@ -867,7 +871,7 @@ public:
             }
             else
             {
-                for (int i = 0; i <= current->size; i++)
+                for (int i = 0; i < current->size; i++)
                 {
                     if (current->key[i].name == x)
                     {
@@ -885,7 +889,7 @@ public:
                         line_actual = regex_replace(line_actual, removal, "");
                         int intline = stoi(line_actual);
 
-                        GotoLine(file, intline + 1);
+                        GotoLine(file, intline);
                         getline(file, str);
                         cout << str << endl;
                     }
@@ -943,16 +947,18 @@ public:
         regex removalf("File0");
         fnum = regex_replace(fnum, removalf, "");
 
-        file << id << "\t" << name << "\t" << dob << "\t" << gender << "\t" << doj << "\t" << adderess << "\t" << qualifi << endl;
+        file << (nodecount - 1) << "\t" << name << "\t" << dob << "\t" << gender << "\t" << doj << "\t" << adderess << "\t" << qualifi << endl;
 
-        string reference = fname + fnum + "L" + to_string(id);
+        string reference = fname + fnum + "L" + to_string(nodecount);
         string type = typeid(T).name();
         // regex for type
         smatch stype;
         regex type_regex("([a-zA-Z]+)");
         regex_search(type, stype, type_regex);
         type = stype.str(0);
-        if (type == "Name")
+        if (type == "Id")
+            insert(to_string(nodecount + 1), reference);
+        else if (type == "Name")
         {
             insert(name, reference);
         }
@@ -977,7 +983,7 @@ public:
         string deleteline;
         string line;
         fstream file;
-        file.open("Fall2022DSDataFile001.txt", ios::in);
+        file.open(FILENAME, ios::in);
         fstream temp;
         temp.open("temp.txt", ios::out);
         while (getline(file, line))
@@ -990,30 +996,620 @@ public:
         }
         file.close();
         temp.close();
-        remove("Fall2022DSDataFile001.txt");
-        rename("temp.txt", "Fall2022DSDataFile001.txt");
+        remove("Fall2022DSDataFile004.txt");
+        rename("temp.txt", "Fall2022DSDataFile004.txt");
+    }
+    int getnodecount()
+    {
+        return nodecount;
     }
 };
 
 int main()
 {
-    BPTree<Name> btree;
-    btree.populate_from_file("Fall2022DSDataFile001.txt");
-    cout << "\n\nDisplaying the tree: " << endl;
-    btree.display(btree.getRoot());
-    btree.search2("25-Apr-74", btree.getRoot());
-    btree.deletee("25-Apr-74");
-    btree.display(btree.getRoot());
-    btree.insert_in_file("Fall2022DSDataFile001.txt", 17, "hassan bukhari", "25-Apr-74", "G", "25-Apr-74", "karachi", "FSc");
-    cout << endl
-         << endl;
-    cout << "Displaying the tree again: " << endl;
-    btree.display(btree.getRoot());
-    btree.delete_from_file("hassan bukhari");
-    // btree.populate_from_file("Fall2022DSDataFile001.txt");
-    cout << endl
-         << endl;
-    cout << "Displaying the tree again part 2: " << endl;
+    // BPTree<Id> btree;
+    cout << "Enter the filenumber: ";
+    int filenumber;
+    cin >> filenumber;
+    FILENAME = "Fall2022DSDataFile00" + to_string(filenumber) + ".txt";
+    // cout << FILENAME << endl;
+    // btree.populate_from_file(FILENAME);
 
-    btree.display(btree.getRoot());
+    while (1)
+    {
+        cout << "Choose B Tree Type: ";
+        cout << "\n1. Id";
+        cout << "\n2. Name";
+        cout << "\n3. Date of Birth";
+        cout << "\n4. Gender";
+        cout << "\n5. Date of Joining";
+        cout << "\n6. Address";
+        cout << "\n7. Qualification";
+        cout << "\n8. Exit";
+
+        int choice;
+        cin >> choice;
+        switch (choice)
+        {
+        case 1:
+        {
+            BPTree<Id> btree;
+            btree.populate_from_file(FILENAME);
+            while (1)
+            {
+                cout << "\n1. Insert";
+                cout << "\n2. Delete";
+                cout << "\n3. Search";
+                cout << "\n4. Display";
+                cout << "\n5. Exit";
+                int choice;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                {
+                    cout << "Enter the id: ";
+                    int id;
+                    cin >> id;
+                    cout << "Enter the name: ";
+                    string name;
+                    cin >> name;
+                    cout << "Enter the dob: ";
+                    string dob;
+                    cin >> dob;
+                    cout << "Enter the Gender: ";
+                    string gender;
+                    cin >> gender;
+                    cout << "Enter the doj: ";
+                    string doj;
+                    cin >> doj;
+                    cout << "Enter the address: ";
+                    string address;
+                    cin >> address;
+                    cout << "Enter the qualification: ";
+                    string qualifi;
+                    cin >> qualifi;
+                    btree.insert_in_file(FILENAME, id, name, dob, gender, doj, address, qualifi);
+                    break;
+                }
+                case 2:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.delete_from_file(ch);
+                    break;
+                }
+                case 3:
+                {
+                    cout << "Enter the string to search: ";
+                    string id;
+                    cin >> id;
+                    btree.search2(id, btree.getRoot());
+                    break;
+                }
+                case 4:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 5:
+                {
+                    exit(0);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case 2:
+        {
+            BPTree<Name> btree;
+            btree.populate_from_file(FILENAME);
+            while (1)
+            {
+                cout << "\n1. Insert";
+                cout << "\n2. Delete";
+                cout << "\n3. Search";
+                cout << "\n4. Display";
+                cout << "\n5. Exit";
+                int choice;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                {
+                    cout << "Enter the id: ";
+                    int id;
+                    cin >> id;
+                    cout << "Enter the name: ";
+                    string name;
+                    cin >> name;
+                    cout << "Enter the dob: ";
+                    string dob;
+                    cin >> dob;
+                    cout << "Enter the Gender: ";
+                    string gender;
+                    cin >> gender;
+                    cout << "Enter the doj: ";
+                    string doj;
+                    cin >> doj;
+                    cout << "Enter the address: ";
+                    string address;
+                    cin >> address;
+                    cout << "Enter the qualification: ";
+                    string qualifi;
+                    cin >> qualifi;
+                    btree.insert_in_file(FILENAME, id, name, dob, gender, doj, address, qualifi);
+                    break;
+                }
+                case 2:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.delete_from_file(ch);
+                    break;
+                }
+                case 3:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.search2(ch, btree.getRoot());
+                    break;
+                }
+                case 4:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 5:
+                {
+                    exit(0);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case 3:
+        {
+            BPTree<Dob> btree;
+            btree.populate_from_file(FILENAME);
+            while (1)
+            {
+                cout << "\n1. Insert";
+                cout << "\n2. Delete";
+                cout << "\n3. Search";
+                cout << "\n4. Display";
+                cout << "\n5. Exit";
+                int choice;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                {
+                    cout << "Enter the id: ";
+                    int id;
+                    cin >> id;
+                    cout << "Enter the name: ";
+                    string name;
+                    cin >> name;
+                    cout << "Enter the dob: ";
+                    string dob;
+                    cin >> dob;
+                    cout << "Enter the Gender: ";
+                    string gender;
+                    cin >> gender;
+                    cout << "Enter the doj: ";
+                    string doj;
+                    cin >> doj;
+                    cout << "Enter the address: ";
+                    string address;
+                    cin >> address;
+                    cout << "Enter the qualification: ";
+                    string qualifi;
+                    cin >> qualifi;
+                    btree.insert_in_file(FILENAME, id, name, dob, gender, doj, address, qualifi);
+                    break;
+                }
+                case 2:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.delete_from_file(ch);
+                    break;
+                }
+                case 3:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.search2(ch, btree.getRoot());
+                    break;
+                }
+                case 4:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 5:
+                {
+                    exit(0);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case 4:
+        {
+            BPTree<Gender> btree;
+            btree.populate_from_file(FILENAME);
+            while (1)
+            {
+                cout << "\n1. Insert";
+                cout << "\n2. Delete";
+                cout << "\n3. Search";
+                cout << "\n4. Display";
+                cout << "\n5. Exit";
+                int choice;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                {
+                    cout << "Enter the id: ";
+                    int id;
+                    cin >> id;
+                    cout << "Enter the name: ";
+                    string name;
+                    cin >> name;
+                    cout << "Enter the dob: ";
+                    string dob;
+                    cin >> dob;
+                    cout << "Enter the Gender: ";
+                    string gender;
+                    cin >> gender;
+                    cout << "Enter the doj: ";
+                    string doj;
+                    cin >> doj;
+                    cout << "Enter the address: ";
+                    string address;
+                    cin >> address;
+                    cout << "Enter the qualification: ";
+                    string qualifi;
+                    cin >> qualifi;
+                    btree.insert_in_file(FILENAME, id, name, dob, gender, doj, address, qualifi);
+                    break;
+                }
+                case 2:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.delete_from_file(ch);
+                    break;
+                }
+                case 3:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.search2(ch, btree.getRoot());
+                    break;
+                }
+                case 4:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 5:
+                {
+                    exit(0);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case 5:
+        {
+            BPTree<Doj> btree;
+            btree.populate_from_file(FILENAME);
+            while (1)
+            {
+                cout << "\n1. Insert";
+                cout << "\n2. Delete";
+                cout << "\n3. Search";
+                cout << "\n4. Display";
+                cout << "\n5. Exit";
+                int choice;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                {
+                    cout << "Enter the id: ";
+                    int id;
+                    cin >> id;
+                    cout << "Enter the name: ";
+                    string name;
+                    cin >> name;
+                    cout << "Enter the dob: ";
+                    string dob;
+                    cin >> dob;
+                    cout << "Enter the Gender: ";
+                    string gender;
+                    cin >> gender;
+                    cout << "Enter the doj: ";
+                    string doj;
+                    cin >> doj;
+                    cout << "Enter the address: ";
+                    string address;
+                    cin >> address;
+                    cout << "Enter the qualification: ";
+                    string qualifi;
+                    cin >> qualifi;
+                    btree.insert_in_file(FILENAME, id, name, dob, gender, doj, address, qualifi);
+                    break;
+                }
+                case 2:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.delete_from_file(ch);
+                    break;
+                }
+                case 3:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.search2(ch, btree.getRoot());
+                    break;
+                }
+                case 4:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 5:
+                {
+                    exit(0);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case 6:
+        {
+            BPTree<Address> btree;
+            btree.populate_from_file(FILENAME);
+            while (1)
+            {
+                cout << "\n1. Insert";
+                cout << "\n2. Delete";
+                cout << "\n3. Search";
+                cout << "\n4. Display";
+                cout << "\n5. Exit";
+                int choice;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                {
+                    cout << "Enter the id: ";
+                    int id;
+                    cin >> id;
+                    cout << "Enter the name: ";
+                    string name;
+                    cin >> name;
+                    cout << "Enter the dob: ";
+                    string dob;
+                    cin >> dob;
+                    cout << "Enter the Gender: ";
+                    string gender;
+                    cin >> gender;
+                    cout << "Enter the doj: ";
+                    string doj;
+                    cin >> doj;
+                    cout << "Enter the address: ";
+                    string address;
+                    cin >> address;
+                    cout << "Enter the qualification: ";
+                    string qualifi;
+                    cin >> qualifi;
+                    btree.insert_in_file(FILENAME, id, name, dob, gender, doj, address, qualifi);
+                    break;
+                }
+                case 2:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.delete_from_file(ch);
+                    break;
+                }
+                case 3:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.search2(ch, btree.getRoot());
+                    break;
+                }
+                case 4:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 5:
+                {
+                    exit(0);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case 7:
+        {
+            BPTree<Qualification> btree;
+            btree.populate_from_file(FILENAME);
+            while (1)
+            {
+                cout << "\n1. Insert";
+                cout << "\n2. Delete";
+                cout << "\n3. Search";
+                cout << "\n4. Display";
+                cout << "\n5. Exit";
+                int choice;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                {
+                    cout << "Enter the id: ";
+                    int id;
+                    cin >> id;
+                    cout << "Enter the name: ";
+                    string name;
+                    cin >> name;
+                    cout << "Enter the dob: ";
+                    string dob;
+                    cin >> dob;
+                    cout << "Enter the Gender: ";
+                    string gender;
+                    cin >> gender;
+                    cout << "Enter the doj: ";
+                    string doj;
+                    cin >> doj;
+                    cout << "Enter the address: ";
+                    string address;
+                    cin >> address;
+                    cout << "Enter the qualification: ";
+                    string qualifi;
+                    cin >> qualifi;
+                    btree.insert_in_file(FILENAME, id, name, dob, gender, doj, address, qualifi);
+                    break;
+                }
+                case 2:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.delete_from_file(ch);
+                    break;
+                }
+                case 3:
+                {
+                    string nama;
+                    char ch[100];
+
+                    cout << "Enter the string to search: \n";
+                    scanf(" %[^\n]s", ch);
+                    // cin.getline(ch, 100);
+                    btree.search2(ch, btree.getRoot());
+                    break;
+                }
+                case 4:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 5:
+                {
+                    exit(0);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case 8:
+        {
+            exit(0);
+        }
+        default:
+        {
+            cout << "Invalid Choice";
+        }
+        }
+    }
+
+    // cout << "\n\nDisplaying the tree: " << endl;
+    // btree.display(btree.getRoot());
+    // btree.search2("Sheikh Shakir Qureshi", btree.getRoot());
+    // btree.deletee("25-Apr-74");
+    // btree.display(btree.getRoot());
+    // int id;
+    // btree.getnodecount();
+    // cout << "bla" << id << endl;
+    // btree.insert_in_file(FILENAME, 12, "hassan bukhari", "25-Apr-74", "G", "25-Apr-74", "karachi", "FSc");
+    // cout << endl
+    //      << endl;
+    // cout << "Displaying the tree again: " << endl;
+    // btree.display(btree.getRoot());
+    // btree.delete_from_file("hassan bukhari");
+    // // btree.populate_from_file(FILENAME);
+    // cout << endl
+    //      << endl;
+    // cout << "Displaying the tree again part 2: " << endl;
+
+    // btree.display(btree.getRoot());
 }
