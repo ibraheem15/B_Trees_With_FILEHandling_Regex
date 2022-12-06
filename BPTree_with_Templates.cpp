@@ -901,6 +901,82 @@ public:
         cout << endl;
     }
 
+    void RangedSearch(string x, int gt, Node<T> *current)
+    {
+        fstream file;
+        file.open(FILENAME, ios::in);
+        string ss;
+        if (root == NULL)
+        {
+            cout << "Tree is empty\n";
+        }
+        else
+        {
+            if (current->IS_LEAF == false)
+            {
+                for (int i = 0; i <= current->size; i++)
+                {
+                    RangedSearch(x,gt, current->ptr[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < current->size; i++)
+                {
+                    if (gt)
+                    {
+                        if (current->key[i].key >= x)
+                        {
+                            cout << "--------Data found--------\n";
+                            // cout << current->key[i].name << " " << current->key[i].reference << endl;
+
+                            string str;
+                            string line = current->key[i].reference;
+
+                            smatch sfnum;
+                            regex rfnum("L([0-9]+)");
+                            regex_search(line, sfnum, rfnum);
+                            regex removal("L");
+                            string line_actual = sfnum.str(0);
+                            line_actual = regex_replace(line_actual, removal, "");
+                            int intline = stoi(line_actual);
+
+                            GotoLine(file, intline);
+                            getline(file, str);
+                            cout << str << endl;
+                        }
+                    }
+                    else
+                    {
+                        if (current->key[i].name.compare(x) <= 0)
+                        {
+                            cout << "--------Data found--------\n";
+                            // cout << current->key[i].name << " " << current->key[i].reference << endl;
+
+                            string str;
+                            string line = current->key[i].reference;
+
+                            smatch sfnum;
+                            regex rfnum("L([0-9]+)");
+                            regex_search(line, sfnum, rfnum);
+                            regex removal("L");
+                            string line_actual = sfnum.str(0);
+                            line_actual = regex_replace(line_actual, removal, "");
+                            int intline = stoi(line_actual);
+
+                            GotoLine(file, intline);
+                            getline(file, str);
+                            cout << str << endl;
+                        }
+                    }
+                }
+
+                return;
+            }
+        }
+        cout << endl;
+    }
+
     fstream &GotoLine(std::fstream &file, unsigned int num)
     {
         file.seekg(std::ios::beg);
@@ -1008,9 +1084,9 @@ public:
 int main()
 {
     // BPTree<Id> btree;
-    cout << "Enter the filenumber: ";
+    std::cout << "Enter the filenumber: ";
     int filenumber;
-    cin >> filenumber;
+    std::cin >> filenumber;
     FILENAME = "Fall2022DSDataFile00" + to_string(filenumber) + ".txt";
     // cout << FILENAME << endl;
     // btree.populate_from_file(FILENAME);
@@ -1040,8 +1116,9 @@ int main()
                 cout << "\n1. Insert";
                 cout << "\n2. Delete";
                 cout << "\n3. Search";
-                cout << "\n4. Display";
-                cout << "\n5. Exit";
+                cout << "\n4. Ranged Search";
+                cout << "\n5. Display";
+                cout << "\n6. Exit";
                 int choice;
                 cin >> choice;
                 switch (choice)
@@ -1093,10 +1170,22 @@ int main()
                 }
                 case 4:
                 {
-                    btree.display(btree.getRoot());
+                    cout << "Greater than: 0/1";
+                    int gt;
+                    cin >> gt;
+                    cout << "Enter the string to search: ";
+                    string id;
+                    cin >> id;
+
+                    btree.RangedSearch(id, gt, btree.getRoot());
                     break;
                 }
                 case 5:
+                {
+                    btree.display(btree.getRoot());
+                    break;
+                }
+                case 6:
                 {
                     exit(0);
                     break;
