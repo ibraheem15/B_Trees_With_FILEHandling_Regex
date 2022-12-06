@@ -125,6 +125,7 @@ public:
     Node *node2;
     int distance;
     Edge *next;
+    bool visited;
 
     Edge(Node *node1, Node *node2, int distance);
     bool Connects(Node *node1, Node *node2);
@@ -132,7 +133,11 @@ public:
     Node *getOtherNode(Node *node);
     Edge *getNext();
     void setNext(Edge *next);
+
 };
+
+
+
 
 class Graph
 {

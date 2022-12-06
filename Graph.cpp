@@ -13,6 +13,114 @@ using namespace std;
 
 #define INT_MAX 10000000
 
+template <typename T>
+struct ADJNode
+{
+    T data;
+    ADJNode<T> *next;
+    ADJNode(T data)
+    {
+        this->data = data;
+        next = NULL;
+    }
+};
+
+template <typename T>
+class LinkedList
+{
+    ADJNode<T> *head;
+    int size;
+
+public:
+    LinkedList()
+    {
+        head = NULL;
+        size = 0;
+    }
+    void insert(T data, int pos)
+    {
+        if (pos < 0 || pos > size)
+        {
+            return;
+        }
+        ADJNode<T> *newNode = new ADJNode<T>(data);
+        if (pos == 0)
+        {
+            newNode->next = head;
+            head = newNode;
+            size++;
+            return;
+        }
+        ADJNode<T> *temp = head;
+        for (int i = 0; i < pos - 1; i++)
+        {
+            temp = temp->next;
+        }
+        newNode->next = temp->next;
+        temp->next = newNode;
+        size++;
+    }
+    void erase(int pos)
+    {
+        if (pos < 0 || pos >= size)
+        {
+            return;
+        }
+        if (pos == 0)
+        {
+            ADJNode<T> *temp = head;
+            head = head->next;
+            delete temp;
+            size--;
+            return;
+        }
+        ADJNode<T> *temp = head;
+        for (int i = 0; i < pos - 1; i++)
+        {
+            temp = temp->next;
+        }
+        ADJNode<T> *toDelete = temp->next;
+        temp->next = temp->next->next;
+        delete toDelete;
+        size--;
+    }
+    void push_back(T data)
+    {
+        insert(data, size);
+    }
+    void pop_back()
+    {
+        erase(size - 1);
+    }
+    T operator[](int i)
+    {
+        ADJNode<T> *temp = head;
+        for (int j = 0; j < i; j++)
+        {
+            temp = temp->next;
+        }
+        return temp->data;
+    }
+    int getSize()
+    {
+        return size;
+    }
+    T back()
+    {
+        return (*this)[size - 1];
+    }
+    void print()
+    {
+        ADJNode<T> *temp = head;
+        while (temp != NULL)
+        {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+};
+
 Vector<Edge *> edges;
 Vector<Node *> nodes;
 
@@ -57,6 +165,7 @@ Edge::Edge(Node *node1, Node *node2, int distance)
     this->node2 = node2;
     this->distance = distance;
     next = NULL;
+    visited = false;
     edges.push_back(this);
 }
 
@@ -402,40 +511,9 @@ void Graph::DijkstrasTest(int start, int end)
         content1 = match1.suffix().str();
     }
 
-    // e[0] = new Edge(node[0], node[1], 1);
-
-    // Node *a = new Node(11);
-    // Node *b = new Node(22);
-    // Node *c = new Node(33);
-    // Node *d = new Node(44);
-    // Node *e = new Node(55);
-    // Node *f = new Node(66);
-    // Node *g = new Node(77);
-
-    // Edge *e1 = new Edge(a, c, 1);
-    // Edge *e2 = new Edge(a, d, 2);
-    // Edge *e3 = new Edge(b, c, 2);
-    // Edge *e4 = new Edge(c, d, 1);
-    // Edge *e5 = new Edge(b, f, 3);
-    // Edge *e6 = new Edge(c, e, 3);
-    // Edge *e7 = new Edge(e, f, 2);
-    // Edge *e8 = new Edge(d, g, 1);
-    // Edge *e9 = new Edge(g, f, 1);
-
-    // a->distanceFromStart = 0; // set start node
-
-    // node->distanceFromStart = 0; // set start node
-    // cout<<"\nbaba"<<nodes[0]->id<<endl;
-
-    // node->distanceFromStart = 0; // set start node
     node[(start % 1000) - 1]->distanceFromStart = 0; // set start node
 
     Dijkstras();
-    // cout << "\nbla" << node[0]->id << endl;
-    // cout << "\nbla" << node[340]->id << endl;
-    // cout << "\nebla" << e[0]->node1->id << endl;
-    // printNode(nodes);
-
     PrintShortestRouteTo(node[(end % 1000) - 1]);
     int max = 0;
     int maxid = 0;
@@ -447,36 +525,59 @@ void Graph::DijkstrasTest(int start, int end)
             maxid = node[i]->id;
         }
     }
-    cout << "Maximum Friends are " << max << " of node " << node[maxid%1000-1]->id << endl;
+    cout << "Maximum Friends are " << max << " of node " << node[maxid % 1000 - 1]->id << endl;
 
     file1.close();
+}
 
-    fstream file2;
-    file2.open("friends.txt", ios::in);
-    stringstream buffer2;
-    buffer2 << file2.rdbuf();
-    string content2 = buffer2.str();
+int main()
+{
+    Graph *graph = new Graph();
+    int start = 0;
+    int end = 0;
 
-    regex nodestobe2("([0-9]+)[:]");
-    smatch match2;
-    int j1 = 0;
-    // int k = 0;
+    cout << "Enter the friend start node: ";
+    cin >> start;
+    cout << "Enter the related friend node: ";
+    cin >> end;
+    int common1 = 0;
+    int common2 = 0;
+    cout << "Enter the common friend node: ";
+    cin >> common1;
+    cout << "Enter the common friend node: ";
+    cin >> common2;
 
-    while (regex_search(content2, match2, nodestobe2))
+    graph->DijkstrasTest(start, end);
+
+    LinkedList<LinkedList<int> *> list;
+    fstream file;
+    file.open("friends.txt", ios::in);
+    stringstream buffer;
+    buffer << file.rdbuf();
+    string content = buffer.str();
+
+    regex nodestobe("([0-9]+)[:]");
+    smatch match;
+    int i = 0;
+    // Node *node = new Node(2500);
+
+    while (regex_search(content, match, nodestobe))
     {
-        int counting = 0;
-        int friendscount = 0;
-
-        string id = match2.str(0);
+        string id = match.str(0);
         regex removal("[:]");
         id = regex_replace(id, removal, "");
-        // cout << endl
-        //  << id << ":";
+        int idint = stoi(id);
+
+        LinkedList<int> *node = new LinkedList<int>();
+        node->push_back(idint);
+        // Node *node = new Node(idint);
+        //Node
+        // insert(node, i);
 
         smatch sedge;
         regex redge("([0-9]+)[ ]");
-        auto start = match2.suffix().first;
-        auto end = match2.suffix().second;
+        auto start = match.suffix().first;
+        auto end = match.suffix().second;
         string edge = string(start, end);
 
         // check end of line
@@ -489,53 +590,57 @@ void Graph::DijkstrasTest(int start, int end)
             edge = edge.substr(0, endline.position());
         }
 
-        while (regex_search(edge, sedge, redge) )
+        while (regex_search(edge, sedge, redge) /* && sedge.size() > 0 */)
         {
             string id2 = sedge.str(0);
             regex removal2("[ ]");
             id2 = regex_replace(id2, removal2, "");
-            // cout << stoi(id2) << " ";
-            int id_1 = stoi(id2);
-            node[j1]->friends += node[(id_1 % 1000) - 1]->count;
-            k++;
-
+            // cout << id2 << " ";
+            int id2int = stoi(id2);
+            node->push_back(id2int);
+            // Node *node2 = new Node(id2int);
+            // insert(node2, i);
             edge = sedge.suffix();
         }
-        j1++;
-        content2 = match2.suffix().str();
+        list.push_back(node);
+        // i++;
+
+        content = match.suffix().str();
     }
 
-    cout<<"Biggest Friends Circle is ";
-    int max2 = 0;
-    int maxid2 = 0;
-
-    for (int i = 0; i < 500; i++)
+    // find the biggest linked list and print its contents
+    int biggest = 0;
+    int biggestindex = 0;
+    for (int i = 0; i < list.getSize(); i++)
     {
-        if (node[i]->friends > max2)
+        if (list[i]->getSize() > biggest)
         {
-            // max = node[i]->distanceFromStart;
-            max2 = node[i]->friends;
-            // cout << node[i]->count << " " << max << endl;
-            maxid2 = node[i]->id;
+            biggest = list[i]->getSize();
+            biggestindex = i;
         }
     }
-    cout<<max2<<" of node "<<node[maxid2%1000-1]->id<<endl;    
-    
-    
-
-}
-
-
-int main()
-{
-    Graph *graph = new Graph();
-    int start = 0;
-    int end = 0;
-    cout << "Enter the friend start node: ";
-    cin >> start;
-    cout << "Enter the related friend node: ";
-    cin >> end;
-    graph->DijkstrasTest(start, end);
-    // graph->BiggestPath();
+    //cout << biggest << endl;
+    // cout << "The biggest linked list is: ";
+    for (int i = 0; i < list[biggestindex]->getSize(); i++)
+    {
+        //cout << list[biggestindex]->operator[](i) << " ";
+    }
+    // create matrix
+    int index1 = common1%1000-1;
+    int index2 = common2%1000-1;
+    // find the common values of both indexes
+    // and print them
+    cout << endl;
+    cout<<"Common friends are:\n";
+    for (int i = 0; i < list[index1]->getSize(); i++)
+    {
+        for (int j = 0; j < list[index2]->getSize(); j++)
+        {
+            if (list[index1]->operator[](i) == list[index2]->operator[](j))
+            {
+                cout << list[index1]->operator[](i) << " ";
+            }
+        }
+    }
     return 0;
 }
