@@ -276,7 +276,7 @@ Vector<Node *> *Graph::AdjacentRemainingNodes(Node *node)
 void Graph::PrintShortestRouteTo(Node *destination)
 {
     Node *next = destination;
-    cout << "\nStarting Destination: " << destination->distanceFromStart << endl;
+    // cout << "\nStarting Destination: " << destination[1] << endl;
     while (next)
     {
         cout << next->id << " ";
@@ -377,10 +377,12 @@ void Graph::printNode(Vector<Node *> &nodes)
     cout << endl;
 }
 
-void Graph::DijkstrasTest(int start, int end)
-{
-    // regex
+Node **node = new Node *[2500];
+Edge **e = new Edge *[122500];
+LinkedList<LinkedList<int> *> list;
 
+void Graph::PopulateNodes()
+{
     fstream file;
     file.open("friends.txt", ios::in);
     stringstream buffer;
@@ -390,54 +392,20 @@ void Graph::DijkstrasTest(int start, int end)
     regex nodestobe("([0-9]+)[:]");
     smatch match;
     int i = 0;
-    // Node *node = new Node(2500);
-    Node **node = new Node *[2500];
 
     while (regex_search(content, match, nodestobe))
     {
+        int counting = 0;
         string id = match.str(0);
         regex removal("[:]");
         id = regex_replace(id, removal, "");
         // cout << endl
         //  << id << ":";
 
-        if (i == 0)
-        {
-            node[i] = new Node(stoi(id));
-            nodes.push_back(node[i]);
-        }
-        else
-        {
-            node[i] = new Node(stoi(id));
-            nodes.push_back(node[i]);
-        }
+        node[i] = new Node(stoi(id));
+        nodes.push_back(node[i]);
+
         i++;
-
-        // smatch sedge;
-        // regex redge("([0-9]+)[ ]");
-        // auto start = match.suffix().first;
-        // auto end = match.suffix().second;
-        // string edge = string(start, end);
-
-        // // check end of line
-
-        // smatch endline;
-        // regex reendl("[\\n]");
-        // regex_search(edge, endline, reendl);
-        // if (endline.size() > 0)
-        // {
-        //     edge = edge.substr(0, endline.position());
-        // }
-
-        // while (regex_search(edge, sedge, redge) /* && sedge.size() > 0 */)
-        // {
-        //     string id2 = sedge.str(0);
-        //     regex removal2("[ ]");
-        //     id2 = regex_replace(id2, removal2, "");
-        //     // cout << id2 << " ";
-
-        //     edge = sedge.suffix();
-        // }
 
         content = match.suffix().str();
     }
@@ -455,7 +423,6 @@ void Graph::DijkstrasTest(int start, int end)
     int j = 0;
     int k = 0;
 
-    Edge **e = new Edge *[1500500];
     // Edge *ee = new Edge(node[0], node[0], 0);
 
     while (regex_search(content1, match1, nodestobe1))
@@ -465,6 +432,11 @@ void Graph::DijkstrasTest(int start, int end)
         string id = match1.str(0);
         regex removal("[:]");
         id = regex_replace(id, removal, "");
+        int id1 = stoi(id);
+
+        LinkedList<int> *ADJnode = new LinkedList<int>();
+        ADJnode->push_back(id1);
+
         // cout << endl
         //  << id << ":";
 
@@ -491,147 +463,41 @@ void Graph::DijkstrasTest(int start, int end)
             id2 = regex_replace(id2, removal2, "");
             // cout << stoi(id2) << " ";
             int id_1 = stoi(id2);
+            ADJnode->push_back(id_1);
             // cout<<id_1%1000<<" ";
 
             e[k] = new Edge(node[j], node[(id_1 % 1000) - 1], 1);
             edges.push_back(e[k]);
-
-            // e[k] = new Edge(node[j], node[id_1], 1);
-            // edges.push_back(e[k]);
-
-            // e[j] = new Edge(node[j], node[stoi(id2)-1], 1);
-            // edges.push_back(e[j]);
             k++;
             counting++;
 
             edge = sedge.suffix();
         }
+        list.push_back(ADJnode);
         node[j]->count = counting;
         j++;
         content1 = match1.suffix().str();
     }
+}
 
+void Graph::FIndPAth(int start, int end)
+{
+    cout<<"Shortest Path: "<<start<<endl;
     node[(start % 1000) - 1]->distanceFromStart = 0; // set start node
 
     Dijkstras();
     PrintShortestRouteTo(node[(end % 1000) - 1]);
-    int max = 0;
-    int maxid = 0;
-    for (int i = 0; i < 500; i++)
-    {
-        if (node[i]->count > max)
-        {
-            max = node[i]->count;
-            maxid = node[i]->id;
-        }
-    }
-    cout << "Maximum Friends are " << max << " of node " << node[maxid % 1000 - 1]->id << endl;
-
-    file1.close();
+  
 }
 
-int main()
+void Graph::commonFriends(int start, int end)
 {
-    Graph *graph = new Graph();
-    int start = 0;
-    int end = 0;
-
-    cout << "Enter the friend start node: ";
-    cin >> start;
-    cout << "Enter the related friend node: ";
-    cin >> end;
-    int common1 = 0;
-    int common2 = 0;
-    cout << "Enter the common friend node: ";
-    cin >> common1;
-    cout << "Enter the common friend node: ";
-    cin >> common2;
-
-    graph->DijkstrasTest(start, end);
-
-    LinkedList<LinkedList<int> *> list;
-    fstream file;
-    file.open("friends.txt", ios::in);
-    stringstream buffer;
-    buffer << file.rdbuf();
-    string content = buffer.str();
-
-    regex nodestobe("([0-9]+)[:]");
-    smatch match;
-    int i = 0;
-    // Node *node = new Node(2500);
-
-    while (regex_search(content, match, nodestobe))
-    {
-        string id = match.str(0);
-        regex removal("[:]");
-        id = regex_replace(id, removal, "");
-        int idint = stoi(id);
-
-        LinkedList<int> *node = new LinkedList<int>();
-        node->push_back(idint);
-        // Node *node = new Node(idint);
-        //Node
-        // insert(node, i);
-
-        smatch sedge;
-        regex redge("([0-9]+)[ ]");
-        auto start = match.suffix().first;
-        auto end = match.suffix().second;
-        string edge = string(start, end);
-
-        // check end of line
-
-        smatch endline;
-        regex reendl("[\\n]");
-        regex_search(edge, endline, reendl);
-        if (endline.size() > 0)
-        {
-            edge = edge.substr(0, endline.position());
-        }
-
-        while (regex_search(edge, sedge, redge) /* && sedge.size() > 0 */)
-        {
-            string id2 = sedge.str(0);
-            regex removal2("[ ]");
-            id2 = regex_replace(id2, removal2, "");
-            // cout << id2 << " ";
-            int id2int = stoi(id2);
-            node->push_back(id2int);
-            // Node *node2 = new Node(id2int);
-            // insert(node2, i);
-            edge = sedge.suffix();
-        }
-        list.push_back(node);
-        // i++;
-
-        content = match.suffix().str();
-    }
-
-    // find the biggest linked list and print its contents
-    int biggest = 0;
-    int biggestindex = 0;
-    for (int i = 0; i < list.getSize(); i++)
-    {
-        if (list[i]->getSize() > biggest)
-        {
-            biggest = list[i]->getSize();
-            biggestindex = i;
-        }
-    }
-    //cout << biggest << endl;
-    // cout << "The biggest linked list is: ";
-    for (int i = 0; i < list[biggestindex]->getSize(); i++)
-    {
-        //cout << list[biggestindex]->operator[](i) << " ";
-    }
-    // create matrix
-    int index1 = common1%1000-1;
-    int index2 = common2%1000-1;
+    int index1 = start % 1000 - 1;
+    int index2 = end % 1000 - 1;
     // find the common values of both indexes
     // and print them
     cout << endl;
-    cout<<"Common friends are:\n";
+    cout << "Common friends are:\n";
     for (int i = 0; i < list[index1]->getSize(); i++)
     {
         for (int j = 0; j < list[index2]->getSize(); j++)
@@ -642,5 +508,76 @@ int main()
             }
         }
     }
+    cout << endl;
+    cout << endl;
+}
+
+void Graph::maxFriends()
+{
+    int max = 0;
+    int maxid = 0;
+    for (int i = 0; i < 500; i++)
+    {
+        if (node[i]->count > max)
+        {
+            max = node[i]->count;
+            maxid = node[i]->id;
+        }
+    }
+    cout << "Maximum Friends are " << max << " of node " << node[maxid % 1000 - 1]->id << endl
+         << endl;
+}
+
+int main()
+{
+    Graph *graph = new Graph();
+    graph->PopulateNodes();
+
+    cout << "--------Graph Implementation--------\n";
+    cout << "--------Dijkstra's Algorithm--------\n";
+    cout << "--------Friend Recommendation--------\n";
+
+    while (1)
+    {
+        cout << "\n\nEnter 1 to find the shortest path between two friends\n";
+        cout << "Enter 2 to find the common friends between two friends\n";
+        cout << "Enter 3 to find the friend with the most friends\n";
+        cout << "Enter 4 to exit\n";
+        int choice;
+        cin >> choice;
+
+        if (choice == 1)
+        {
+            int start, end;
+            cout << "Enter the friend start node: ";
+            cin >> start;
+            cout << "Enter the related friend node: ";
+            cin >> end;
+            graph->FIndPAth(start, end);
+        }
+        else if (choice == 2)
+        {
+            int start, end, common1, common2;
+            cout << "Enter the common friend node: ";
+            cin >> common1;
+            cout << "Enter the common friend node: ";
+            cin >> common2;
+            graph->commonFriends(common1, common2);
+        }
+        else if (choice == 3)
+        {
+            graph->maxFriends();
+        }
+        else if (choice == 4)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid choice\n";
+        }
+    }
+
+  
     return 0;
 }

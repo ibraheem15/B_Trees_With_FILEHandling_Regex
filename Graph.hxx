@@ -97,7 +97,6 @@ public:
         }
         return false;
     }
-    
 };
 
 class Node
@@ -133,37 +132,24 @@ public:
     Node *getOtherNode(Node *node);
     Edge *getNext();
     void setNext(Edge *next);
-
 };
-
-
-
 
 class Graph
 {
 public:
-    // Node *nodes;
-    // Vector<Node *> nodes;
-    // Vector<Edge *> edges;
-    // Edge *edges;
     int size;
 
     Graph();
-    void addNode(char id);
-    void addEdge(char id1, char id2, int distance);
-    void printGraph();
-    void printNodes();
-    void printEdges();
     Vector<Edge *> *AdjacentEdges(Vector<Edge *> &edges, Node *node);
     void RemoveEdge(Vector<Edge *> &edges, Edge *edge);
     void Dijkstras();
-    void DijkstrasTest(int,int);
+    void FIndPAth(int, int);
     void BiggestPath();
+    void commonFriends(int, int);
+    void maxFriends();
+    void PopulateNodes();
 
     void printNode(Vector<Node *> &nodes);
-    void printEdge(Edge *edge);
-    Node *getNode(char id);
-    Edge *getEdge(char id1, char id2);
     Vector<Node *> *AdjacentRemainingNodes(Node *node);
     Node *ExtractSmallest(Vector<Node *> &nodes);
     int Distance(Node *node1, Node *node2);
