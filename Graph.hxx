@@ -148,6 +148,8 @@ public:
     void commonFriends(int, int);
     void maxFriends();
     void PopulateNodes();
+    void nocommonFriends();
+    void Nodes_With_NoPath();
 
     void printNode(Vector<Node *> &nodes);
     Vector<Node *> *AdjacentRemainingNodes(Node *node);

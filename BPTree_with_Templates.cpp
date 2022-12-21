@@ -916,7 +916,7 @@ public:
             {
                 for (int i = 0; i <= current->size; i++)
                 {
-                    RangedSearch(x,gt, current->ptr[i]);
+                    RangedSearch(x, gt, current->ptr[i]);
                 }
             }
             else
@@ -925,7 +925,7 @@ public:
                 {
                     if (gt)
                     {
-                        if (current->key[i].key >= x)
+                        if (current->key[i].name >= x)
                         {
                             cout << "--------Data found--------\n";
                             // cout << current->key[i].name << " " << current->key[i].reference << endl;

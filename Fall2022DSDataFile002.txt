@@ -96,4 +96,4 @@
 196	Mudassir Alam	26-Dec-76	M	12-Aug-94	house no.663 s# 54  Mutian wala Thata	F.Sc.
 197	Arif Kazmi	29-Aug-76	M	15-Aug-94	ho. #  210 St. no. 17 PRC coloney khr	Fsc
 198	Sultana Qureshi	29-Sep-75	F	19-Aug-94	Ho. No. 525 street #  13 Dak ghar Sadiqabad	A level
-199	Abdul Qadeer Shuja Ismaili	2-May-75	M	22-Aug-94	H No. 839 S No. 8 Cement factory coloney Chishtian	HSSC
+12	hassan bukhari	25-Apr-74	G	25-Apr-74	karachi	FSc

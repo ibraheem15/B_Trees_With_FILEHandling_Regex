@@ -482,12 +482,11 @@ void Graph::PopulateNodes()
 
 void Graph::FIndPAth(int start, int end)
 {
-    cout<<"Shortest Path: "<<start<<endl;
+    cout << "Shortest Path: " << start << endl;
     node[(start % 1000) - 1]->distanceFromStart = 0; // set start node
 
     Dijkstras();
     PrintShortestRouteTo(node[(end % 1000) - 1]);
-  
 }
 
 void Graph::commonFriends(int start, int end)
@@ -528,6 +527,34 @@ void Graph::maxFriends()
          << endl;
 }
 
+void Graph::nocommonFriends()
+{
+    int count = 0;
+    for (int i = 0; i < 500; i++)
+    {
+        if (node[i]->count == 0)
+        {
+            count++;
+        }
+    }
+    cout << "Number of friends with no connection are " << count << endl
+         << endl;
+}
+
+void Graph::Nodes_With_NoPath()
+{
+    //print 2 nodes with no path between them
+    cout << endl;
+    cout << "The values that dont have any connections are: ";
+    for (int i = 0; i < list.getSize(); i++)
+    {
+        if (list[i]->getSize() == 1)
+        {
+            cout << list[i]->operator[](0) << " ";
+        }
+    }
+}
+
 int main()
 {
     Graph *graph = new Graph();
@@ -542,7 +569,8 @@ int main()
         cout << "\n\nEnter 1 to find the shortest path between two friends\n";
         cout << "Enter 2 to find the common friends between two friends\n";
         cout << "Enter 3 to find the friend with the most friends\n";
-        cout << "Enter 4 to exit\n";
+        cout << "Enter 4 to find the friends with no connection\n";
+        cout << "Enter 5 to exit\n";
         int choice;
         cin >> choice;
 
@@ -570,6 +598,10 @@ int main()
         }
         else if (choice == 4)
         {
+            graph->Nodes_With_NoPath();
+        }
+        else if (choice == 5)
+        {
             break;
         }
         else
@@ -578,6 +610,5 @@ int main()
         }
     }
 
-  
     return 0;
 }
